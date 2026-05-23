@@ -20,10 +20,19 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "package": "com.ifero25.rootWatch"
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "dbb7d06b-8411-4528-ac2b-e07f5e8c1157"
+      }
+    },
+    "owner": "ifero25",
+    "plugins": [
+      "@react-native-google-signin/google-signin"
+    ]
   }
 }

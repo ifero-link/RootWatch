@@ -1,20 +1,24 @@
+import React, { useEffect } from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import AppNavigator from './src/navigation/AppNavigator';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import { WEBCLIENTID } from './config';
 
 export default function App() {
+  useEffect(() => {
+    GoogleSignin.configure({
+      
+      
+      webClientId: WEBCLIENTID, 
+      offlineAccess: true, // Permite obtener el idToken necesario para el backend
+    });
+  }, []);
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <NavigationContainer>
+      <StatusBar style="dark" />
+      <AppNavigator />
+    </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});

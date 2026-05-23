@@ -3,6 +3,10 @@
 # dependencies
 node_modules/
 
+# ips
+.env
+config.js
+
 # Expo
 .expo/
 dist/
