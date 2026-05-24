@@ -5,6 +5,7 @@ import HomeScreen from '../screens/HomeScreen';
 import HistoryScreen from '../screens/HistoryScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import LoginScreen from '../screens/LoginScreen'; 
+import PlantsScreen from '../screens/PlantsScreen';
 import { Text } from 'react-native';
 
 const Tab = createBottomTabNavigator();
@@ -18,6 +19,7 @@ function MainTabs() {
         tabBarIcon: ({ focused, color, size }) => {
           let icon;
           if (route.name === 'Panel') icon = focused ? '🪴' : '🌱';
+          else if (route.name === 'Plantas') icon = focused ? '🌿' : '🍃';
           else if (route.name === 'Historial') icon = focused ? '📊' : '📈';
           else if (route.name === 'Ajustes') icon = focused ? '⚙️' : '🛠️';
           
@@ -29,6 +31,7 @@ function MainTabs() {
       })}
     >
       <Tab.Screen name="Panel" component={HomeScreen} />
+      <Tab.Screen name="Plantas" component={PlantsScreen} />
       <Tab.Screen name="Historial" component={HistoryScreen} />
       <Tab.Screen name="Ajustes" component={SettingsScreen} />
     </Tab.Navigator>
