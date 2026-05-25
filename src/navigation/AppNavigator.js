@@ -6,6 +6,7 @@ import HistoryScreen from '../screens/HistoryScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import LoginScreen from '../screens/LoginScreen'; 
 import PlantsScreen from '../screens/PlantsScreen';
+import CalendarScreen from '../screens/CalendarScreen'; // <- 1. IMPORTAMOS LA NUEVA PANTALLA
 import { Text } from 'react-native';
 
 const Tab = createBottomTabNavigator();
@@ -15,12 +16,12 @@ function MainTabs() {
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
-
         tabBarIcon: ({ focused, color, size }) => {
           let icon;
           if (route.name === 'Panel') icon = focused ? '🪴' : '🌱';
           else if (route.name === 'Plantas') icon = focused ? '🌿' : '🍃';
           else if (route.name === 'Historial') icon = focused ? '📊' : '📈';
+          else if (route.name === 'Agenda') icon = focused ? '📅' : '📆'; // <- 2. ICONOS PARA LA AGENDA
           else if (route.name === 'Ajustes') icon = focused ? '⚙️' : '🛠️';
           
           return <Text style={{ fontSize: size }}>{icon}</Text>;
@@ -33,6 +34,10 @@ function MainTabs() {
       <Tab.Screen name="Panel" component={HomeScreen} />
       <Tab.Screen name="Plantas" component={PlantsScreen} />
       <Tab.Screen name="Historial" component={HistoryScreen} />
+      
+      {/* 3. AÑADIMOS LA NUEVA PESTAÑA DE CALENDARIO/AGENDA */}
+      <Tab.Screen name="Agenda" component={CalendarScreen} />
+      
       <Tab.Screen name="Ajustes" component={SettingsScreen} />
     </Tab.Navigator>
   );
