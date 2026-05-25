@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, ActivityIndicator, TouchableOpacity, ScrollView, RefreshControl } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, RefreshControl } from 'react-native';
+import { FontAwesome5 } from '@expo/vector-icons';
 import { apiService } from '../services/api';
+import { globalStyles, COLORES } from '../styles/globalStyles';
 
 export default function HomeScreen() {
   const [medicion, setMedicion] = useState(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
-  // Función para descargar los datos de la API de Spring Boot
   const consultarApi = async () => {
     try {
       const data = await apiService.getUltimaMedicion();
@@ -21,107 +22,133 @@ export default function HomeScreen() {
   };
 
   useEffect(() => {
-  //  Carga inicial al abrir la pantalla
-  consultarApi();
-
-  // Configura el temporizador para que consulte cada 10 segundos
-  const temporizador = setInterval(() => {
-    console.log("Refrescando datos del SmartHuerto automáticamente...");
     consultarApi();
-  }, 10000);
-
-
-  // Cuando el usuario cambie de pestaña este return apaga el temporizador para no consumir batería ni saturar tu servidor Java.
-  return () => clearInterval(temporizador);
-}, []);
-
-  const onRefresh = () => {
-    setRefreshing(true);
-    consultarApi();
-  };
-
-  if (loading) {
-    return (
-      <View style={styles.center}>
-        <ActivityIndicator size="large" color="#2ECC71" />
-        <Text style={styles.loadingText}>Conectando con Root Watch Server...</Text>
-      </View>
-    );
-  }
+    const temporizador = setInterval(() => {
+      consultarApi();
+    }, 10000);
+    return () => clearInterval(temporizador);
+  }, []);
 
   return (
     <ScrollView 
-      style={styles.container}
-      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#2ECC71']} />}
+      style={globalStyles.container}
+      contentContainerStyle={{ paddingBottom: 40 }}
+      refreshControl={
+        <RefreshControl 
+          refreshing={refreshing} 
+          onRefresh={() => { setRefreshing(true); consultarApi(); }} 
+          colors={[COLORES.primario]} 
+        />
+      }
     >
-      {/* Cabecera superior estilizada estilo Figma */}
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Root Watch</Text>
-        <Text style={styles.headerSubtitle}>Estado actual de tu SmartHuerto</Text>
+      {/* Encabezado */}
+      <View style={styles.headerBanner}>
+        <Text style={styles.bannerTitle}>SmartHuerto IoT</Text>
+        <Text style={styles.bannerSubtitle}>Estado de salud en tiempo real</Text>
       </View>
 
-      {/* Tarjeta de Estado del Sistema */}
-      <View style={styles.cardStatus}>
-        <Text style={styles.cardTitle}>Estado General</Text>
-        <Text style={styles.statusBadge}>🟢 En Línea y Sincronizado</Text>
+      {/* Estado del sistema */}
+      <View style={[globalStyles.card, { marginHorizontal: 20, marginBottom: 10 }]}>
+        <Text style={styles.cardTitle}>
+          <FontAwesome5 name="info-circle" color={COLORES.primario} /> Estado del Sistema
+        </Text>
+        <Text style={{ color: COLORES.primario, fontWeight: '600', marginTop: 8 }}>
+          📡 Dispositivo Arduino R4 WiFi Online
+        </Text>
       </View>
 
-      {/* Grid de Sensores (2 columnas) */}
+      {/* Grid de Sensores */}
       <View style={styles.gridContainer}>
-        
-        {/* Celda de Temperatura */}
-        <View style={styles.gridItem}>
-          <Text style={styles.iconSensor}>🌡️</Text>
-          <Text style={styles.labelSensor}>Temperatura</Text>
-          <Text style={styles.valueSensor}>{medicion?.temperatura !== undefined ? `${medicion.temperatura}°C` : '--'}</Text>
-        </View>
-
-        {/* Celda de Humedad Ambiental */}
-        <View style={styles.gridItem}>
-          <Text style={styles.iconSensor}>💧</Text>
-          <Text style={styles.labelSensor}>Hum. Ambiente</Text>
-          <Text style={styles.valueSensor}>{medicion?.humedad !== undefined ? `${medicion.humedad}%` : '--'}</Text>
-        </View>
-
-        {/* Celda de Humedad del Suelo */}
-        <View style={styles.gridItem}>
-          <Text style={styles.iconSensor}>🪴</Text>
-          <Text style={styles.labelSensor}>Humedad Suelo</Text>
-          <Text style={styles.valueSensor}>{medicion?.humedadSuelo !== undefined ? `${medicion.humedadSuelo}%` : '--'}</Text>
-        </View>
-
-        {/* Celda de Iluminación LDR */}
-        <View style={styles.gridItem}>
-          <Text style={styles.iconSensor}>☀️</Text>
-          <Text style={styles.labelSensor}>Luz Solar</Text>
-          <Text style={styles.valueSensor}>{medicion?.luz !== undefined ? `${medicion.luz}%` : '--'}</Text>
-        </View>
-        
+        {[
+          { icon: 'thermometer-half', color: COLORES.error, label: 'Temperatura', value: `${medicion?.temperatura ?? '--'} °C` },
+          { icon: 'cloud', color: COLORES.info, label: 'Humedad Aire', value: `${medicion?.humedad ?? '--'} %` },
+          { icon: 'tint', color: COLORES.info, label: 'Humedad Suelo', value: `${medicion?.humedadSuelo ?? '--'} %` },
+          { icon: 'sun', color: COLORES.advertencia, label: 'Luminosidad', value: `${medicion?.luz ?? '--'} %` },
+        ].map((item, index) => (
+          <View key={index} style={[globalStyles.card, styles.gridItem]}>
+            <FontAwesome5 name={item.icon} size={32} color={item.color} />
+            <Text style={styles.gridLabel}>{item.label}</Text>
+            <Text style={styles.gridValue}>{item.value}</Text>
+          </View>
+        ))}
       </View>
 
-      {/* Botón manual de actualización rápida */}
-      <TouchableOpacity style={styles.buttonRefresh} onPress={consultarApi}>
-        <Text style={styles.buttonText}>Forzar Actualización</Text>
-      </TouchableOpacity>
+      {/* Tarjeta de Recomendación*/}
+      <View style={[globalStyles.card, { marginHorizontal: 20, marginTop: 5, padding: 20, marginBottom: 40 }]}>
+        <Text style={styles.cardTitle}>
+          <FontAwesome5 name="leaf" color={COLORES.primario} /> Recomendación del Día
+        </Text>
+        
+        <Text style={{ color: COLORES.grisTexto, marginTop: 12, lineHeight: 22 }}>
+          {(() => {
+            if (!medicion) return "Cargando datos...";
+
+            let mensajes = [];
+
+            // Evaluamos cada condición y añadimos el texto específico que elegiste
+            if (medicion.humedadSuelo < 30) {
+              mensajes.push("El nivel de humedad del suelo está bajo. Se recomienda activar el sistema de riego automático pronto para evitar daños en las raíces.");
+            }
+            if (medicion.temperatura > 35) {
+              mensajes.push("Se ha detectado una temperatura elevada. Asegura que tu huerto tenga buena ventilación para evitar el estrés térmico en las plantas.");
+            }
+            if (medicion.luz < 20) {
+              mensajes.push("La luminosidad es insuficiente. Considera mover la maceta a un lugar con mayor exposición solar para favorecer la fotosíntesis.");
+            }
+            if (medicion.humedad < 40) {
+              mensajes.push("El aire está algo seco. Un poco de pulverización de agua en las hojas ayudará a mantener la frescura de tu huerto.");
+            }
+
+            // Si hay mensajes, los unimos con un salto de línea; si no, el mensaje de optimismo
+            return mensajes.length > 0 
+              ? mensajes.join('\n\n') 
+              : "Los niveles ambientales son óptimos. Tu huerto está en excelente estado, continúa con el monitoreo regular.";
+          })()}
+        </Text>
+      </View>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F8FBF8' }, // Fondo pálido de la guía de diseño
-  center: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#F8FBF8' },
-  loadingText: { marginTop: 10, color: '#7F8C8D', fontSize: 14 },
-  header: { backgroundColor: '#2ECC71', padding: 24, paddingTop: 60, borderBottomLeftRadius: 24, borderBottomRightRadius: 24 },
-  headerTitle: { fontSize: 26, fontWeight: 'bold', color: '#FFFFFF' },
-  headerSubtitle: { fontSize: 14, color: '#E8F8F5', marginTop: 4 },
-  cardStatus: { backgroundColor: '#FFFFFF', margin: 16, padding: 16, borderRadius: 16, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 10, elevation: 2 },
-  cardTitle: { fontSize: 16, fontWeight: 'bold', color: '#2C3E50', marginBottom: 6 },
-  statusBadge: { fontSize: 14, color: '#27AE60', fontWeight: '600' },
-  gridContainer: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', paddingHorizontal: 16 },
-  gridItem: { backgroundColor: '#FFFFFF', width: '47%', padding: 16, borderRadius: 16, marginBottom: 16, alignItems: 'center', shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 10, elevation: 2 },
-  iconSensor: { fontSize: 32, marginBottom: 8 },
-  labelSensor: { fontSize: 12, color: '#7F8C8D', fontWeight: '500' },
-  valueSensor: { fontSize: 22, fontWeight: 'bold', color: '#2C3E50', marginTop: 4 },
-  buttonRefresh: { backgroundColor: '#2C3E50', margin: 16, padding: 15, borderRadius: 12, alignItems: 'center' },
-  buttonText: { color: '#FFFFFF', fontWeight: 'bold', fontSize: 16 }
+  headerBanner: { 
+    backgroundColor: COLORES.primarioOscuro, 
+    padding: 30, 
+    paddingTop: 60, 
+    borderBottomLeftRadius: 30, 
+    borderBottomRightRadius: 30, 
+    marginBottom: 20 
+  },
+  bannerTitle: { fontSize: 30, fontWeight: 'bold', color: COLORES.blanco },
+  bannerSubtitle: { fontSize: 14, color: COLORES.primarioClaro, marginTop: 4 },
+  
+  cardTitle: { fontSize: 16, fontWeight: 'bold', color: COLORES.grisTextoOscuro },
+  
+  gridContainer: { 
+    flexDirection: 'row', 
+    flexWrap: 'wrap', 
+    justifyContent: 'space-between', 
+    paddingHorizontal: 20,
+    marginTop: 10
+  },
+  gridItem: { 
+    width: '47%', 
+    alignItems: 'center', 
+    paddingVertical: 35, 
+    marginBottom: 15,
+    elevation: 3, 
+    borderRadius: 20 
+  },
+  gridLabel: { 
+    fontSize: 14, 
+    color: COLORES.grisTexto, 
+    marginTop: 12,
+    fontWeight: '500'
+  },
+  gridValue: { 
+    fontSize: 24, 
+    fontWeight: '800', 
+    color: COLORES.primarioOscuro, 
+    marginTop: 8 
+  }
 });
