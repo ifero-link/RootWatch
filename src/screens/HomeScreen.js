@@ -43,7 +43,7 @@ export default function HomeScreen() {
     >
       {/* Encabezado */}
       <View style={styles.headerBanner}>
-        <Text style={styles.bannerTitle}>SmartHuerto IoT</Text>
+        <Text style={styles.bannerTitle}>Root Watch</Text>
         <Text style={styles.bannerSubtitle}>Estado de salud en tiempo real</Text>
       </View>
 
@@ -85,7 +85,7 @@ export default function HomeScreen() {
 
             let mensajes = [];
 
-            // Evaluamos cada condición y añadimos el texto específico que elegiste
+            // Evaluamos cada condición y añadimos el texto específico
             if (medicion.humedadSuelo < 30) {
               mensajes.push("El nivel de humedad del suelo está bajo. Se recomienda activar el sistema de riego automático pronto para evitar daños en las raíces.");
             }
@@ -99,7 +99,7 @@ export default function HomeScreen() {
               mensajes.push("El aire está algo seco. Un poco de pulverización de agua en las hojas ayudará a mantener la frescura de tu huerto.");
             }
 
-            // Si hay mensajes, los unimos con un salto de línea; si no, el mensaje de optimismo
+            // Si hay mensajes, los unimos con un salto de línea.
             return mensajes.length > 0 
               ? mensajes.join('\n\n') 
               : "Los niveles ambientales son óptimos. Tu huerto está en excelente estado, continúa con el monitoreo regular.";
@@ -112,7 +112,7 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
   headerBanner: { 
-    backgroundColor: COLORES.primarioOscuro, 
+    backgroundColor: COLORES.primario, 
     padding: 30, 
     paddingTop: 60, 
     borderBottomLeftRadius: 30, 

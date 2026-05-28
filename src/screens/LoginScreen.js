@@ -12,27 +12,27 @@ export default function LoginScreen({ navigation }) {
   const iniciarSesionConGoogle = async () => {
     setCargando(true);
     try {
-      // 1. Comprobamos si el móvil tiene los servicios de Google Play activos
+      // Comprobamos si el móvil tiene los servicios de Google Play activos
       await GoogleSignin.hasPlayServices();
       
-      // 2. Abrimos el desplegable nativo de Google para elegir cuenta
+      // Abrimos el desplegable nativo de Google para elegir cuenta
       const userInfo = async () => { return await GoogleSignin.signIn(); };
       const resultado = await userInfo();
       
-      // 3. Extraemos el idToken de forma segura según la versión de la librería
+      // Extraemos el idToken de forma segura según la versión de la librería
       const idToken = resultado.idToken || (resultado.data && resultado.data.idToken);
 
       if (!idToken) {
         throw new Error("No se pudo obtener el ID Token de Google");
       }
 
-      // 4. Enviamos el Token a nuestro Backend (RESTAURADA CLAVE 'idToken' ORIGINAL)
+      // Enviamos el Token a nuestro Backend 
       const respuesta = await fetch(`http://${API_IP}:8080/api/usuarios/login-google`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ idToken: idToken }), // <- Cambiado 'token' por 'idToken'
+        body: JSON.stringify({ idToken: idToken }), 
       });
 
       const datosBackend = await respuesta.json();
@@ -42,7 +42,7 @@ export default function LoginScreen({ navigation }) {
         const nombreParaSaludar = datosBackend.nombre || datosBackend.username; 
         Alert.alert("¡Bienvenido!", `Hola, ${nombreParaSaludar}`);
         
-        // 5. Redirigimos al flujo correcto (RESTAURADO 'MainTabs' ORIGINAL)
+        // Redirigimos al flujo correcto 
         navigation.replace('MainTabs'); 
       } else {
         Alert.alert("Error de autenticación", datosBackend.mensaje || "El servidor rechazó el token");

@@ -8,9 +8,7 @@ import * as Notifications from 'expo-notifications';
 import { API_IP } from '../../config';
 import { COLORES, globalStyles } from '../styles/globalStyles';
 
-// ========================================================
-// 1. MATRIZ DE UMBRALES BOTÁNICOS (REQUISITO RF-012)
-// ========================================================
+
 const DICCIONARIO_UMBRALES = {
   "Poto": { sueloMin: 30, sueloMax: 70, tempMin: 15, tempMax: 30, luzMin: 20, luzMax: 70, msgSeco: "El Poto necesita agua ligera. La tierra está seca." },
   "Suculenta / Cactus": { sueloMin: 10, sueloMax: 45, tempMin: 10, tempMax: 40, luzMin: 50, luzMax: 95, msgSeco: "Alerta de sequía extrema para tu Cactus." },
@@ -28,9 +26,7 @@ const DICCIONARIO_UMBRALES = {
   }
 };
 
-// ========================================================
-// FUNCIÓN DE RESOLUCIÓN DE UMBRALES CON FALLBACK GENÉRICO
-// ========================================================
+
 const obtenerUmbralesPlanta = (nombrePlanta) => {
   if (!nombrePlanta) return DICCIONARIO_UMBRALES["Generico"];
   
@@ -45,9 +41,7 @@ const obtenerUmbralesPlanta = (nombrePlanta) => {
   return DICCIONARIO_UMBRALES["Generico"];
 };
 
-// ========================================================
-// FUNCIÓN PARA CALCULAR EL ESTADO FÍSICO DEL SENSOR
-// ========================================================
+
 const calcularEstadoSensor = (tipoSensor, valor, umbrales) => {
   const num = parseFloat(valor);
   if (isNaN(num)) return { texto: "Sin señal", color: COLORES.grisTexto };
