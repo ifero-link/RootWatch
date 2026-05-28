@@ -18,7 +18,7 @@ export const apiService = {
   // GET /api/mediciones/all
   getHistorialMediciones: async () => {
     try {
-      // 🔥 CORREGIDO: Añadimos /all al final para coincidir con el cambio de Java
+     
       const response = await fetch(`${BASE_URL}/all`); 
       if (!response.ok) {
         throw new Error(`Error en el servidor: ${response.status}`);
